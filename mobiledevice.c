@@ -30,7 +30,7 @@ struct
 char *create_cstr_from_cfstring(CFStringRef cfstring)
 {
   CFIndex str_len = CFStringGetLength(cfstring);
-  if (str_len <= 0)
+  if (str_len < 0)
   {
     return NULL;
   }
