@@ -27,6 +27,34 @@ struct
     }                                    \
   } while (0)
 
+char *create_cstr_from_cfstring(CFStringRef cfstring)
+{
+  CFIndex str_len = CFStringGetLength(cfstring);
+  if (str_len <= 0)
+  {
+    return NULL;
+  }
+
+  CFIndex buf_len = CFStringGetMaximumSizeForEncoding(str_len, kCFStringEncodingUTF8) + 1;
+  if (buf_len < 1)
+  {
+    return NULL;
+  }
+
+  char *cstr = (char *)malloc(buf_len);
+  if (cstr == NULL)
+  {
+    return NULL;
+  }
+
+  if (CFStringGetCString(cfstring, cstr, buf_len, kCFStringEncodingUTF8))
+  {
+    return cstr;
+  }
+
+  return NULL;
+}
+
 void unregister_device_notification(int status)
 {
   AMDeviceNotificationUnsubscribe(command.notification);
@@ -101,11 +129,17 @@ CFStringRef get_bundle_id(const char *app_path)
 
 void get_udid(struct am_device *device)
 {
-  CFStringEncoding encoding = CFStringGetSystemEncoding();
-  const char *udid = CFStringGetCStringPtr(AMDeviceCopyDeviceIdentifier(device), encoding);
+  char *udid = create_cstr_from_cfstring(AMDeviceCopyDeviceIdentifier(device));
+
+  if (udid == NULL)
+  {
+    unregister_device_notification(1);
+  }
 
   // print UDID to stdout
   printf("%s\n", udid);
+
+  free(udid);
   unregister_device_notification(0);
 }
 
@@ -150,14 +184,19 @@ void uninstall_app(struct am_device *device)
   unregister_device_notification(0);
 }
 
-static void print_bundle_id_and_path(const void *key, const void *value, void *context)
+static void print_bundle_id(const void *key, const void *value, void *context)
 {
   if ((key == NULL) || (value == NULL))
   {
     return;
   }
 
-  printf("%s\n", CFStringGetCStringPtr(key, kCFStringEncodingMacRoman));
+  char *bundle_id = create_cstr_from_cfstring((CFStringRef)key);
+  if (bundle_id != NULL)
+  {
+    printf("%s\n", bundle_id);
+    free(bundle_id);
+  }
 }
 
 void list_installed_apps(struct am_device *device)
@@ -168,7 +207,7 @@ void list_installed_apps(struct am_device *device)
   ASSERT_OR_EXIT(!AMDeviceLookupApplications(device, 0, &apps),
                  "!AMDeviceLookupApplications\n");
 
-  CFDictionaryApplyFunction(apps, print_bundle_id_and_path, NULL);
+  CFDictionaryApplyFunction(apps, print_bundle_id, NULL);
   CFRelease(apps);
 
   unregister_device_notification(0);
@@ -244,8 +283,16 @@ int main(int argc, char *argv[])
     {
       exit(1);
     }
-    printf("%s\n", CFStringGetCStringPtr(bundle_id, kCFStringEncodingMacRoman));
+
+    char *_bundle_id = create_cstr_from_cfstring(bundle_id);
     CFRelease(bundle_id);
+
+    if (_bundle_id == NULL)
+    {
+      exit(1);
+    }
+    printf("%s\n", _bundle_id);
+    free(_bundle_id);
     exit(0);
   }
   else if ((argc == 3) && (strcmp(argv[1], "install_app") == 0))
