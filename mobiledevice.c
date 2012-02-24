@@ -157,12 +157,7 @@ static void print_bundle_id_and_path(const void *key, const void *value, void *c
     return;
   }
 
-  value = CFDictionaryGetValue((CFDictionaryRef)value, CFSTR("Path"));
-  if (value != NULL)
-  {
-    printf("%s %s\n", CFStringGetCStringPtr(key, kCFStringEncodingMacRoman),
-           CFStringGetCStringPtr(value, kCFStringEncodingMacRoman));
-  }
+  printf("%s\n", CFStringGetCStringPtr(key, kCFStringEncodingMacRoman));
 }
 
 void list_installed_apps(struct am_device *device)
