@@ -604,6 +604,9 @@ extern "C" {
   int AMDeviceSecureUninstallApplication(int unknown0, struct am_device *device, CFStringRef bundle_id,
                                          int unknown1, void *callback, int callback_arg);
   int AMDeviceLookupApplications(struct am_device *device, int unknown0, CFDictionaryRef* apps);
+
+  /* obtained from http://theiphonewiki.com/wiki/index.php?title=USBMuxConnectByPort */
+  int USBMuxConnectByPort(int connectionID, int iPhone_port_network_byte_order, int* outHandle);
 	
 	/* ----------------------------------------------------------------------------
 	 *   Semi-private routines
