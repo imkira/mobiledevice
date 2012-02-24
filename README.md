@@ -43,11 +43,12 @@ and you can see the following usage screen:
 Usage: mobiledevice <command>
 
 <Commands>
-  get_udid                    : Display UDID of connected device
-  get_bundle_id <path_to_app> : Display bundle identifier of app (.app folder)
-  install_app <path_to_app>   : Install app (.app folder) to device
-  uninstall <bundle_id>       : Uninstall app by bundle id
-  list_installed_apps         : Lists all installed apps on device
+  get_udid                     : Display UDID of connected device
+  get_bundle_id <path_to_app>  : Display bundle identifier of app (.app folder)
+  install_app <path_to_app>    : Install app (.app folder) to device
+  uninstall <bundle_id>        : Uninstall app by bundle id
+  list_installed_apps          : Lists all installed apps on device
+  tunnel <from_port> <to_port> : Forward TCP connections to connected device
 ```
 
 On failure, all commands exit with status code set to a non-zero value
@@ -117,6 +118,38 @@ com.mycompany.myapp1
 com.mycompany.myapp2
 ...
 ```
+
+### Forward (tunnel) TCP connections from Mac to the connected device
+
+If your mobile app creates a TCP server by listening on some port,
+it may be useful to connect to it via USB (no need for WiFi/3G connection).
+mobiledevice allows you to create a tunnel between your Mac and your device,
+via a USB connection. If you connect to your Mac (on localhost or 127.0.0.1)
+mobiledevice will forward that connection to the device on the specified port
+by typing something like:
+
+```
+mobiledevice tunnel 8080 80
+```
+
+The example above attempts to illustrate a tunnel between your Mac's TCP port 8080
+and the device's TCP port 80. The output would be something like:
+
+```
+Tunneling from local port 8080 to device port 80...
+```
+
+From this point you can "telnet localhost 8080" and communicate with the server
+running at TCP port 80 on the mobile app!
+
+Please note that if you keep the process open, it will keep forwarding connections.
+If and when you decide to terminate it (for instance, by pressing CTRL-C), it will
+terminate all currently tunnelled connections and stop accepting more connections to it.
+
+Also note that mobiledevice allows you to keep multiple connections open to the
+same TCP port on the device (by running a single instance of mobiledevice), or to
+different ports (by running multiple instances of mobiledevice and specifying the
+ports for each). 
 
 ## Contribute
 
