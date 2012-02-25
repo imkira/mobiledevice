@@ -1,3 +1,5 @@
+[日本語はこちら](https://github.com/imkira/mobiledevice/blob/master/README_JP.md)
+
 mobiledevice
 ============
 
@@ -9,10 +11,10 @@ You don't need a jailbroken device!
 ## Requirements
 
 * iPhone 3G and above should work / iPad too (tested on iPhone 4).
-* iOS development certificate installed previously on device.
-* Mac OS X 10.6 and above (tested on Snow Leopard but should work on Lion too).
-* XCode 3 or 4 + iOS SDK.
 * Plug in your iPhone/iPad to your Mac via USB.
+* In order to install apps on the device, you need the iOS development certificates previously installed.
+* Mac OS X 10.6 and above (tested on Snow Leopard but should work on Lion too).
+* XCode 3 or 4 + iOS SDK installed.
 * You need to compile the tool and optionally install it.
 
 ## Compilation & Installation
@@ -139,14 +141,15 @@ and the device's TCP port 80. The output would be something like:
 Tunneling from local port 8080 to device port 80...
 ```
 
-From this point you can "telnet localhost 8080" and communicate with the server
+From this point you can `telnet localhost 8080` and communicate with the server
 running at TCP port 80 on the mobile app!
 
-Please note that if you keep the process open, it will keep forwarding connections.
+Notes:
+
+* Please note that if you keep the process open, it will keep forwarding connections.
 If and when you decide to terminate it (for instance, by pressing CTRL-C), it will
 terminate all currently tunnelled connections and stop accepting more connections to it.
-
-Also note that mobiledevice allows you to keep multiple connections open to the
+* Also note that mobiledevice allows you to keep multiple connections open to the
 same TCP port on the device (by running a single instance of mobiledevice), or to
 different ports (by running multiple instances of mobiledevice and specifying the
 ports for each). 
