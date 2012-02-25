@@ -65,7 +65,7 @@ of list_installed_apps command, all should return some output on stdout
 
 ### Get the UDID of the connected device
 
-This command is useful for using on other tools (like UIAutomator's "-w" parameter):
+This command is useful for using on other tools (like UIAutomator instruments's "-w" parameter):
 
 ```
 mobiledevice get_udid
