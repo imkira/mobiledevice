@@ -248,6 +248,7 @@ void create_tunnel(struct am_device *device, uint16_t src_port, uint16_t dst_por
   struct mobiletunnel t;
   int reuse = 1;
   struct sockaddr_in addr;
+  socklen_t addr_size;
 
   // initialize tunnel server socket
   init_tunnel(&t);
@@ -261,16 +262,24 @@ void create_tunnel(struct am_device *device, uint16_t src_port, uint16_t dst_por
   setsockopt(t.sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse, sizeof(reuse));
 
   // specify tunnel server address (localhost) and port
-  memset(&addr, 0, sizeof(struct sockaddr_in));
+  addr_size = sizeof(addr);
+  memset(&addr, 0, addr_size);
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
   addr.sin_port = htons(src_port);
 
   // bind server socket to the address we specified
-  if ((bind(t.sock, (struct sockaddr *)&addr, sizeof(addr)) != 0) ||
+  if ((bind(t.sock, (struct sockaddr *)&addr, addr_size) != 0) ||
       (listen(t.sock, 10) != 0))
   {
     ASSERT_OR_EXIT(0, &t, "Failed to bind to port %d!\n", src_port);
+  }
+
+  // if user passes port 0 as local port, we want to print out the real port.
+  if ((src_port == 0) &&
+      (getsockname(t.sock, (struct sockaddr *)&addr, &addr_size) == 0))
+  {
+    src_port = ntohs(addr.sin_port);
   }
 
   printf("Tunneling from local port %u to device port %u...\n", src_port, dst_port);
