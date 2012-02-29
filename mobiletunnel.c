@@ -7,6 +7,13 @@
 
 #define TUNNEL_MAX_CONNS (FD_SETSIZE / 2 - 1)
 
+#define FLPRINT(...)           \
+  do                           \
+  {                            \
+    printf( __VA_ARGS__);      \
+    fflush(stdout);            \
+  } while (0)
+
 #define ASSERT_OR_EXIT(_cnd_, _t_, ...)  \
   do                                     \
   {                                      \
@@ -86,13 +93,13 @@ void terminate_tunnel(struct mobiletunnel *t)
   // close all connections
   while (t->conn_count > 0)
   {
-    printf("Closing connection between client and device...\n");
+    FLPRINT("Closing connection between client and device...\n");
     remove_tunnel_conn(t, i);
   }
   // close server socket
   if (t->sock != -1)
   {
-    printf("Closing tunnel...\n");
+    FLPRINT("Closing tunnel...\n");
     close(t->sock);
   }
   init_tunnel(t);
@@ -121,7 +128,7 @@ int accept_tunnel_conn(struct mobiletunnel *t)
     return 0;
   }
 
-  printf("Got new client!\n");
+  FLPRINT("Got new client!\n");
 
   if (t->conn_count >= TUNNEL_MAX_CONNS)
   {
@@ -143,7 +150,7 @@ int accept_tunnel_conn(struct mobiletunnel *t)
     return 0;
   }
 
-  printf("Forwarding connection to device...\n");
+  FLPRINT("Forwarding connection to device...\n");
 
   // register connection between source and remove sockets
   add_tunnel_conn(t, src_sock, dst_sock);
@@ -235,7 +242,7 @@ void terminate_tunnel_at_exit(int sig)
 {
   if (tunnel != NULL)
   {
-    printf("Terminating...\n");
+    FLPRINT("Terminating...\n");
     terminate_tunnel(tunnel);
     tunnel = NULL;
     unregister_device_notification(0);
@@ -282,7 +289,7 @@ void create_tunnel(struct am_device *device, uint16_t src_port, uint16_t dst_por
     src_port = ntohs(addr.sin_port);
   }
 
-  printf("Tunneling from local port %u to device port %u...\n", src_port, dst_port);
+  FLPRINT("Tunneling from local port %u to device port %u...\n", src_port, dst_port);
 
   // register termination function
   tunnel = &t;
