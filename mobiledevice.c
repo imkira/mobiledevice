@@ -17,6 +17,7 @@ struct
   enum MobileDeviceCommandType type;
   const char *app_path;
   const char *bundle_id;
+  int print_paths;
   uint16_t src_port;
   uint16_t dst_port;
 } command;
@@ -190,7 +191,7 @@ void uninstall_app(struct am_device *device)
   unregister_device_notification(0);
 }
 
-static void print_bundle_id(const void *key, const void *value, void *context)
+static void print_installed_app(const void *key, const void *value, void *context)
 {
   if ((key == NULL) || (value == NULL))
   {
@@ -198,11 +199,36 @@ static void print_bundle_id(const void *key, const void *value, void *context)
   }
 
   char *bundle_id = create_cstr_from_cfstring((CFStringRef)key);
-  if (bundle_id != NULL)
+
+  if (bundle_id == NULL)
+  {
+    return;
+  }
+
+  if (command.print_paths)
+  {
+    char *path = NULL;
+    CFStringRef path_value;
+    path_value = CFDictionaryGetValue((CFDictionaryRef)value, CFSTR("Path"));
+
+    if (path_value != NULL)
+    {
+      path = create_cstr_from_cfstring(path_value);
+    }
+
+    printf("%s\t%s\n", bundle_id, (path == NULL) ? "" : path);
+
+    if (path != NULL)
+    {
+      free(path);
+    }
+  }
+  else
   {
     printf("%s\n", bundle_id);
-    free(bundle_id);
   }
+
+  free(bundle_id);
 }
 
 void list_installed_apps(struct am_device *device)
@@ -213,7 +239,7 @@ void list_installed_apps(struct am_device *device)
   ASSERT_OR_EXIT(!AMDeviceLookupApplications(device, 0, &apps),
                  "!AMDeviceLookupApplications\n");
 
-  CFDictionaryApplyFunction(apps, print_bundle_id, NULL);
+  CFDictionaryApplyFunction(apps, print_installed_app, NULL);
   CFRelease(apps);
 
   unregister_device_notification(0);
@@ -265,14 +291,17 @@ void register_device_notification()
 
 void print_syntax()
 {
-  printf("Usage: mobiledevice <command>\n\n");
+  printf("Usage: mobiledevice <command> [<options>]\n\n");
   printf("<Commands>\n");
   printf("  get_udid                     : Display UDID of connected device\n");
   printf("  get_bundle_id <path_to_app>  : Display bundle identifier of app (.app folder)\n");
   printf("  install_app <path_to_app>    : Install app (.app folder) to device\n");
   printf("  uninstall <bundle_id>        : Uninstall app by bundle id\n");
-  printf("  list_installed_apps          : Lists all installed apps on device\n");
+  printf("  list_installed_apps [-p]     : Lists all installed apps on device\n");
   printf("  tunnel <from_port> <to_port> : Forward TCP connections to connected device\n");
+  printf("\n");
+  printf("<Options>\n");
+  printf("  -p : Include installation paths (use with list_installed_apps)\n");
 }
 
 int main(int argc, char *argv[])
@@ -324,6 +353,15 @@ int main(int argc, char *argv[])
   else if (strcmp(argv[1], "list_installed_apps") == 0)
   {
     command.type = ListInstalledApps;
+
+    if ((argc == 3) && (strcmp(argv[2], "-p") == 0))
+    {
+      command.print_paths = 1;
+    }
+    else
+    {
+      command.print_paths = 0;
+    }
   }
   // tunnel
   else if ((argc == 4) && (strcmp(argv[1], "tunnel") == 0))

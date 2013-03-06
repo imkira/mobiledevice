@@ -41,15 +41,19 @@ mobiledevice
 下記の通り、基本使い方の説明画面を確認できる（下記は日本語に翻訳したもの）。
 
 ```
-Usage: mobiledevice <command>
+Usage: mobiledevice <command> [<options>]
 
 <Commands>
   get_udid                           : 接続中の端末のUDIDを取得する。
   get_bundle_id <appへのパス>          : .appフォルダーを指定してbundle identifierを取得する。
   install_app <appへのパス>            : .appフォルダーを指定して接続中の端末にアプリをインストールする。
   uninstall <bundle_id>              : bundle identifierを指定して接続中の端末からアプリをアンインストールする。
-  list_installed_apps                : 接続中の端末にインストールされているアプリの一覧を取得する。
+  list_installed_apps [-p]           : 接続中の端末にインストールされているアプリの一覧を取得する。
   tunnel <何ポートから> <何ポートへ>     : ローカルポートから接続中の端末のポートへのTCPトンネルを設立する。
+
+
+<Options>
+  -p : list_installed_appsで使うとインストールのパスも出力する。
 ```
 
 上記コマンドの実行に失敗した場合、そのプロセスが「0」というstatus以外の値で必ず終了する。
@@ -77,6 +81,10 @@ mobiledevice get_udid
 ```
 mobiledevice get_bundle_id folder1/folder2/example.app
 ```
+
+注意点：
+
+* パスは、端末上のパスでなくローカルのパソコン上のパスを指定する。
 
 ### .appフォルダーを指定して接続中の端末にアプリをインストールする
 
@@ -118,6 +126,24 @@ com.mycompany.myapp1
 com.mycompany.myapp2
 ...
 ```
+
+```-p``` を指定すると、Bundle
+IDだけでなく端末上にインストールされているアプリのインストールのパスも含めて出力する。
+
+内容は下記のようなものである。
+
+```
+com.apple.VoiceMemos  /Applications/VoiceMemos.app
+com.apple.mobiletimer /Applications/MobileTimer.app
+...
+com.mycompany.myapp1  /private/var/mobile/Applications/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/YYYY.app
+com.mycompany.myapp2  /private/var/mobile/Applications/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/ZZZZ.app
+...
+```
+
+注意点：
+
+* Bundle IDとインストールのパスはTAB区切りである。
 
 ### Macのローカルポートから接続中の端末のポートへのTCPトンネルを成立する
 

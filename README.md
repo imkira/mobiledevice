@@ -42,15 +42,18 @@ mobiledevice
 and you can see the following usage screen:
 
 ```
-Usage: mobiledevice <command>
+Usage: mobiledevice <command> [<options>]
 
 <Commands>
   get_udid                     : Display UDID of connected device
   get_bundle_id <path_to_app>  : Display bundle identifier of app (.app folder)
   install_app <path_to_app>    : Install app (.app folder) to device
   uninstall <bundle_id>        : Uninstall app by bundle id
-  list_installed_apps          : Lists all installed apps on device
+  list_installed_apps [-p]     : Lists all installed apps on device
   tunnel <from_port> <to_port> : Forward TCP connections to connected device
+
+<Options>
+  -p : Include installation paths (use with list_installed_apps)
 ```
 
 On failure, all commands exit with status code set to a non-zero value
@@ -58,7 +61,7 @@ On failure, all commands exit with status code set to a non-zero value
 indicating the kind of error.
 
 On success,  all commands exit with status code set to 0. With the exception
-of list_installed_apps command, all should return some output on stdout 
+of list_installed_apps command, all should return some output on stdout
 (like "OK" to signal success).
 
 ## Examples
@@ -80,6 +83,10 @@ the following command (bear in mind it must be a valid .app folder, not a .ipa!)
 ```
 mobiledevice get_bundle_id path/to/my_application.app
 ```
+
+Notes:
+
+* Please note that the above path is on your local computer, not a path to the device.
 
 ### Install an application on the connected device
 
@@ -121,6 +128,22 @@ com.mycompany.myapp2
 ...
 ```
 
+If you pass ```-p``` as an option, you will be able to get the bundle identifier
+and the respective installation path:
+
+```
+com.apple.VoiceMemos  /Applications/VoiceMemos.app
+com.apple.mobiletimer /Applications/MobileTimer.app
+...
+com.mycompany.myapp1  /private/var/mobile/Applications/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/YYYY.app
+com.mycompany.myapp2  /private/var/mobile/Applications/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/ZZZZ.app
+...
+```
+
+Notes:
+
+* Please note that bundle id and installation path is TAB-separated.
+
 ### Forward (tunnel) TCP connections from Mac to the connected device
 
 If your mobile app creates a TCP server by listening on some port,
@@ -152,7 +175,7 @@ terminate all currently tunnelled connections and stop accepting more connection
 * Also note that mobiledevice allows you to keep multiple connections open to the
 same TCP port on the device (by running a single instance of mobiledevice), or to
 different ports (by running multiple instances of mobiledevice and specifying the
-ports for each). 
+ports for each).
 
 ## Contribute
 
