@@ -48,7 +48,7 @@ Usage: mobiledevice <command> [<options>]
   get_udid                     : Display UDID of connected device
   get_bundle_id <path_to_app>  : Display bundle identifier of app (.app folder)
   install_app <path_to_app>    : Install app (.app folder) to device
-  uninstall <bundle_id>        : Uninstall app by bundle id
+  uninstall_app <bundle_id>    : Uninstall app by bundle id
   list_installed_apps [-p]     : Lists all installed apps on device
   tunnel <from_port> <to_port> : Forward TCP connections to connected device
 

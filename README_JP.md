@@ -44,12 +44,12 @@ mobiledevice
 Usage: mobiledevice <command> [<options>]
 
 <Commands>
-  get_udid                           : 接続中の端末のUDIDを取得する。
-  get_bundle_id <appへのパス>          : .appフォルダーを指定してbundle identifierを取得する。
-  install_app <appへのパス>            : .appフォルダーを指定して接続中の端末にアプリをインストールする。
-  uninstall <bundle_id>              : bundle identifierを指定して接続中の端末からアプリをアンインストールする。
-  list_installed_apps [-p]           : 接続中の端末にインストールされているアプリの一覧を取得する。
-  tunnel <何ポートから> <何ポートへ>     : ローカルポートから接続中の端末のポートへのTCPトンネルを設立する。
+  get_udid                            : 接続中の端末のUDIDを取得する。
+  get_bundle_id <appへのパス>         : .appフォルダーを指定してbundle identifierを取得する。
+  install_app <appへのパス>           : .appフォルダーを指定して接続中の端末にアプリをインストールする。
+  uninstall_app <bundle_id>           : bundle identifierを指定して接続中の端末からアプリをアンインストールする。
+  list_installed_apps [-p]            : 接続中の端末にインストールされているアプリの一覧を取得する。
+  tunnel <何ポートから> <何ポートへ>  : ローカルポートから接続中の端末のポートへのTCPトンネルを設立する。
 
 
 <Options>
