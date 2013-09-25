@@ -88,7 +88,7 @@ void remove_tunnel_conn(struct mobiletunnel *t, int conn)
 
 void terminate_tunnel(struct mobiletunnel *t)
 {
-  int i;
+  int i = 0;
 
   // close all connections
   while (t->conn_count > 0)

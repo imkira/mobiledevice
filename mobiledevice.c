@@ -1,4 +1,4 @@
-#include "mobiledevice.h";
+#include "mobiledevice.h"
 #include <string.h>
 #include <stdlib.h>
 
