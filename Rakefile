@@ -6,7 +6,7 @@ require 'rake'
 task :default => 'mobiledevice'
 
 desc 'Compile mobiledevice'
-file 'mobiledevice' => ['mobiledevice.c', 'mobiletunnel.c', 'mobiledevice.h'] do |t|
+file 'mobiledevice' => ['mobiledevice.c', 'mobiletunnel.c'] do |t|
   sh %Q[gcc -Wall -o "#{t.name}" -framework CoreFoundation -framework \
     MobileDevice -F/System/Library/PrivateFrameworks \
     "#{t.prerequisites.join('" "')}"]
