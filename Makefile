@@ -5,7 +5,7 @@ CC = clang
 all: mobiledevice
 
 mobiledevice: mobiledevice.m
-	$(CC) -Wall -fobjc-arc -o mobiledevice -framework CoreFoundation -framework Cocoa -framework MobileDevice -F/System/Library/PrivateFrameworks mobiledevice.m
+	$(CC) -Wall -fobjc-arc -o mobiledevice -framework CoreFoundation -framework Cocoa -framework MobileDevice -F/System/Library/PrivateFrameworks mobiledevice.m mobiletunnel.c
 
 clean:
 	rm -rf mobiledevice
