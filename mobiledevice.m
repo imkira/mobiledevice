@@ -72,12 +72,12 @@ static void get_udid(struct am_device *device)
   // print UDID to stdout
   if (udid == nil) 
   {
-    unregister_device_notification(0);
+    unregister_device_notification(1);
   }
   else 
   {
     printfNS(@"%@\n", udid);
-    unregister_device_notification(1);
+    unregister_device_notification(0);
   }
 }
 
