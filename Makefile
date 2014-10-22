@@ -4,8 +4,11 @@ CC = clang
 
 all: mobiledevice
 
-mobiledevice: mobiledevice.m
+mobiledevice: mobiledevice.m mobiletunnel.c mobiledevice.h
 	$(CC) -Wall -fobjc-arc -o mobiledevice -framework CoreFoundation -framework Cocoa -framework MobileDevice -F/System/Library/PrivateFrameworks mobiledevice.m mobiletunnel.c
+
+install: mobiledevice
+	install ./mobiledevice /usr/local/bin
 
 clean:
 	rm -rf mobiledevice

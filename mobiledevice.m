@@ -70,8 +70,15 @@ static void get_udid(struct am_device *device)
 {
   NSString* udid = (__bridge NSString*) AMDeviceCopyDeviceIdentifier(device);
   // print UDID to stdout
-  printfNS(@"%@\n", udid==nil ? @"(nil)" : udid);
-  unregister_device_notification(udid==nil? 1: 0);
+  if (udid == nil) 
+  {
+    unregister_device_notification(0);
+  }
+  else 
+  {
+    printfNS(@"%@\n", udid);
+    unregister_device_notification(1);
+  }
 }
 
 static void install_app(struct am_device *device)
@@ -164,7 +171,8 @@ static void on_device_connected(struct am_device *device)
 
 static void on_device_notification(struct am_device_notification_callback_info *info, int cookie)
 {
-  if (info->msg==ADNCI_MSG_CONNECTED) {
+  if (info->msg==ADNCI_MSG_CONNECTED) 
+  {
     on_device_connected(info->dev);
   }
 }
@@ -182,8 +190,9 @@ static void print_syntax()
   printf("  get_udid                     : Display UDID of connected device\n");
   printf("  get_bundle_id <path_to_app>  : Display bundle identifier of app (.app folder)\n");
   printf("  install_app <path_to_app>    : Install app (.app folder) to device\n");
-  printf("  uninstall_app <bundle_id>        : Uninstall app by bundle id\n");
+  printf("  uninstall_app <bundle_id>    : Uninstall app by bundle id\n");
   printf("  list_installed_apps [-p]     : Lists all installed apps on device\n");
+  printf("  tunnel <from_port> <to_port> : Forward TCP connections to connected device\n");
   printf("\n");
   printf("<Options>\n");
   printf("  -p : Include installation paths (use with list_installed_apps)\n");
@@ -206,8 +215,15 @@ int main(int argc, char *argv[])
   else if ((argc == 3) && (strcmp(argv[1], "get_bundle_id") == 0))
   {
     NSString*  bundle_id = get_bundle_id(argv[2]);
-    printfNS(@"%@\n", bundle_id==nil ? @"(nil)": bundle_id);
-    exit(bundle_id==nil?1:0);
+    if (bundle_id == nil)
+    {
+      exit(1);
+    }
+    else
+    {
+      printfNS(@"%@\n", bundle_id);
+      exit(0);
+    }
   }
   // install_app
   else if ((argc == 3) && (strcmp(argv[1], "install_app") == 0))
@@ -225,7 +241,14 @@ int main(int argc, char *argv[])
   else if (strcmp(argv[1], "list_installed_apps") == 0)
   {
     command.type = ListInstalledApps;
-    command.print_paths= ((argc == 3) && (strcmp(argv[2], "-p") == 0)) ? true : false;
+    if ((argc == 3) && (strcmp(argv[2], "-p") == 0))
+    {
+      command.print_paths = true;
+    }
+    else
+    {
+      command.print_paths = false;
+    }
   }
   // tunnel
   else if ((argc == 4) && (strcmp(argv[1], "tunnel") == 0))
