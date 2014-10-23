@@ -35,7 +35,7 @@ void create_tunnel(struct am_device *device, uint16_t src_port, uint16_t dst_por
   } while (0)
 
 //works like NSLog without log header
-static void printfNS(NSString *format, ...) 
+static void printfNS(NSString *format, ...)
 {
   va_list args;
   va_start(args, format);
@@ -69,12 +69,13 @@ static NSString* get_bundle_id(const char *app_path)
 static void get_udid(struct am_device *device)
 {
   NSString* udid = (__bridge NSString*) AMDeviceCopyDeviceIdentifier(device);
+
   // print UDID to stdout
-  if (udid == nil) 
+  if (udid == nil)
   {
     unregister_device_notification(1);
   }
-  else 
+  else
   {
     printfNS(@"%@\n", udid);
     unregister_device_notification(0);
@@ -87,6 +88,7 @@ static void install_app(struct am_device *device)
   NSString* path=[NSString stringWithUTF8String:command.app_path];
   NSURL* local_app_url=[NSURL fileURLWithPath:path isDirectory:TRUE];
   NSDictionary *options = @{ @"PackageType" : @"Developer" };
+
   // copy .app to device
   ASSERT_OR_EXIT(!AMDeviceSecureTransferPath(0, device, (__bridge CFURLRef) local_app_url, (__bridge CFDictionaryRef) options,
                  NULL, 0), "!AMDeviceSecureTransferPath\n");
@@ -171,7 +173,7 @@ static void on_device_connected(struct am_device *device)
 
 static void on_device_notification(struct am_device_notification_callback_info *info, int cookie)
 {
-  if (info->msg==ADNCI_MSG_CONNECTED) 
+  if (info->msg == ADNCI_MSG_CONNECTED)
   {
     on_device_connected(info->dev);
   }
