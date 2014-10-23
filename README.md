@@ -24,9 +24,9 @@ To compile (and optionally install) mobiledevice, open a terminal console and ty
 ```
 git clone git://github.com/imkira/mobiledevice.git
 cd mobiledevice
-rake
+make
 # to install system-wide (under /usr/local/bin) type the command below too:
-rake install
+make install
 ```
 
 ## Usage
