@@ -23,9 +23,9 @@ mobiledeviceをコンパイルするには、ターミナルを開いて下記�
 ```
 git clone git://github.com/imkira/mobiledevice.git
 cd mobiledevice
-rake
+make
 #  /usr/local/binの下にインストールするには下記コマンドも入力する：
-rake install
+make install
 ```
 
 ## 使い方
