@@ -17,6 +17,7 @@ struct
   enum MobileDeviceCommandType type;
   const char *app_path;
   const char *bundle_id;
+  const char *device_udid;
   bool print_paths;
   uint16_t src_port;
   uint16_t dst_port;
@@ -135,6 +136,14 @@ static void print_installed_app(const void *key, const void *value, void *contex
 
 static void list_installed_apps(struct am_device *device)
 {
+  if (command.device_udid != NULL) {
+    NSString* udid = (__bridge NSString*) AMDeviceCopyDeviceIdentifier(device);
+    if (strcmp(command.device_udid, udid.UTF8String) != 0) {
+      // Not the device we are looking for, skip it
+      return;
+    }
+  }
+
   connect_to_device(device);
 
   CFDictionaryRef apps;
@@ -250,6 +259,14 @@ int main(int argc, char *argv[])
     else
     {
       command.print_paths = false;
+    }
+
+    if ((argc == 4) && (strcmp(argv[2], "-u") == 0))
+    {
+      command.device_udid = argv[3];
+    }
+    else {
+      command.device_udid = NULL;
     }
   }
   // tunnel
