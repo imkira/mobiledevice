@@ -339,7 +339,7 @@ extern "C" {
         * Possible values for domain:
         * com.apple.mobile.battery
 	 */
-	__DLLIMPORT CFStringRef AMDeviceCopyValue(struct am_device *device, CFStringRef domain, CFStringRef cfstring);
+	__DLLIMPORT id AMDeviceCopyValue(struct am_device *device, CFStringRef domain, CFStringRef cfstring);
 	
 	/* Starts a service and returns a socket file descriptor that can be used in order to further
 	 * access the service. You should stop the session and disconnect before using

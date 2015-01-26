@@ -1,9 +1,8 @@
-#include "mobiledevice.h"
+#include "cli.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <signal.h>
-#include <unistd.h>
 
 #define TUNNEL_MAX_CONNS (FD_SETSIZE / 2 - 1)
 
@@ -14,19 +13,16 @@
     fflush(stdout);            \
   } while (0)
 
-#define ASSERT_OR_EXIT(_cnd_, _t_, ...)  \
-  do                                     \
-  {                                      \
-    if (!(_cnd_))                        \
-    {                                    \
-      fprintf(stderr, __VA_ARGS__);      \
-      terminate_tunnel(_t_);             \
-      unregister_device_notification(1); \
-    }                                    \
+#define TUNNEL_ASSERT_OR_EXIT(_cnd_, _t_, ...)  \
+  do                                            \
+  {                                             \
+    if (!(_cnd_))                               \
+    {                                           \
+      fprintf(stderr, __VA_ARGS__);             \
+      terminate_tunnel(_t_);                    \
+      device_unregister(1);                     \
+    }                                           \
   } while (0)
-
-void unregister_device_notification(int status);
-void connect_to_device(struct am_device *device);
 
 struct mobiletunnel
 {
@@ -41,7 +37,7 @@ struct mobiletunnel
   } conns[TUNNEL_MAX_CONNS];
   int conn_count;
   fd_set monitored_socks;
-} *tunnel = NULL;
+} *current_tunnel = NULL;
 
 void init_tunnel(struct mobiletunnel *t)
 {
@@ -206,7 +202,7 @@ void tunnel_loop(struct mobiletunnel *t)
                          NULL, NULL, NULL);
 
 
-    ASSERT_OR_EXIT(ready_count > 0, t, "!select\n");
+    TUNNEL_ASSERT_OR_EXIT(ready_count > 0, t, "!select\n");
 
     // new connection to tunnel server?
     if (FD_ISSET(t->sock, &signaled_socks))
@@ -240,12 +236,12 @@ void tunnel_loop(struct mobiletunnel *t)
 
 void terminate_tunnel_at_exit(int sig)
 {
-  if (tunnel != NULL)
+  if (current_tunnel != NULL)
   {
     FLPRINT("Terminating...\n");
-    terminate_tunnel(tunnel);
-    tunnel = NULL;
-    unregister_device_notification(0);
+    terminate_tunnel(current_tunnel);
+    current_tunnel = NULL;
+    device_unregister(0);
   }
   exit(0);
 }
@@ -264,7 +260,7 @@ void create_tunnel(struct am_device *device, uint16_t src_port, uint16_t dst_por
   t.dst_port = dst_port;
 
   t.sock = socket(AF_INET, SOCK_STREAM, 0);
-  ASSERT_OR_EXIT(t.sock != -1, &t, "!socket\n");
+  TUNNEL_ASSERT_OR_EXIT(t.sock != -1, &t, "!socket\n");
 
   setsockopt(t.sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse, sizeof(reuse));
 
@@ -279,7 +275,7 @@ void create_tunnel(struct am_device *device, uint16_t src_port, uint16_t dst_por
   if ((bind(t.sock, (struct sockaddr *)&addr, addr_size) != 0) ||
       (listen(t.sock, 10) != 0))
   {
-    ASSERT_OR_EXIT(0, &t, "Failed to bind to port %d!\n", src_port);
+    TUNNEL_ASSERT_OR_EXIT(0, &t, "Failed to bind to port %d!\n", src_port);
   }
 
   // if user passes port 0 as local port, we want to print out the real port.
@@ -292,7 +288,7 @@ void create_tunnel(struct am_device *device, uint16_t src_port, uint16_t dst_por
   FLPRINT("Tunneling from local port %u to device port %u...\n", src_port, dst_port);
 
   // register termination function
-  tunnel = &t;
+  current_tunnel = &t;
   signal(SIGHUP, terminate_tunnel_at_exit);
   signal(SIGINT, terminate_tunnel_at_exit);
   signal(SIGQUIT, terminate_tunnel_at_exit);
@@ -300,4 +296,60 @@ void create_tunnel(struct am_device *device, uint16_t src_port, uint16_t dst_por
 
   // accept connections and tunnel them
   tunnel_loop(&t);
+}
+
+static char *expected_udid = NULL;
+static uint16_t tunnel_src_port = 0;
+static uint16_t tunnel_dst_port = 0;
+
+static void on_device_connected(struct am_device *device)
+{
+  if (!device_matches(device, expected_udid))
+  {
+    return;
+  }
+
+  device_delayed_unregister_aborted = true;
+  device_connect(device);
+  create_tunnel(device, tunnel_src_port, tunnel_dst_port);
+}
+
+int tunnel(int argc, char *argv[])
+{
+  int flag;
+  char *endptr;
+  int64_t timeout = -1;
+
+  while ((flag = getopt(argc, argv, "u:t:")) != -1)
+  {
+    switch (flag)
+    {
+      case 'u':
+        expected_udid = optarg;
+        break;
+
+      case 't':
+        timeout = strtoll(optarg, &endptr, 10);
+        break;
+
+      default:
+        help(argc, argv);
+        return 1;
+    }
+  }
+
+  argc -= optind;
+  argv += optind;
+
+  if (argc != 2)
+  {
+    return invalid_usage(argc, argv);
+  }
+
+  tunnel_src_port = (uint16_t)atoi(argv[0]);
+  tunnel_dst_port = (uint16_t)atoi(argv[1]);
+
+  device_delayed_unregister_status = 1;
+  device_register(on_device_connected, timeout);
+  return 1;
 }
