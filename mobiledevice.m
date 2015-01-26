@@ -46,6 +46,14 @@ static void printfNS(NSString *format, ...)
   fprintf(stdout, "%s", [str UTF8String]);
 }
 
+static NSString* get_bundle_id(const char *app_path)
+{
+  NSString* path=[NSString stringWithUTF8String:app_path];
+  path=[path stringByAppendingPathComponent:@"Info.plist"];
+  NSDictionary *dict = [[NSDictionary alloc] initWithContentsOfFile:path];
+  return dict[@"CFBundleIdentifier"];
+}
+
 void unregister_device_notification(int status)
 {
   AMDeviceNotificationUnsubscribe(command.notification);
@@ -60,12 +68,16 @@ static void connect_to_device(struct am_device *device)
   ASSERT_OR_EXIT(!AMDeviceStartSession(device), "!AMDeviceStartSession\n");
 }
 
-static NSString* get_bundle_id(const char *app_path)
+static bool match_device(struct am_device *device)
 {
-  NSString* path=[NSString stringWithUTF8String:app_path];
-  path=[path stringByAppendingPathComponent:@"Info.plist"];
-  NSDictionary *dict = [[NSDictionary alloc] initWithContentsOfFile:path];
-  return dict[@"CFBundleIdentifier"];
+  if (command.device_udid == NULL)
+  {
+    return false;
+  }
+
+  NSString* udid = (__bridge NSString*) AMDeviceCopyDeviceIdentifier(device);
+  NSString* expected_udid=[NSString stringWithUTF8String:command.device_udid];
+  return ([udid caseInsensitiveCompare:expected_udid] == NSOrderedSame);
 }
 
 static void get_udid(struct am_device *device)
@@ -87,6 +99,7 @@ static void get_udid(struct am_device *device)
 static void describe(struct am_device *device)
 {
   connect_to_device(device);
+
   NSString* name = (__bridge NSString*) AMDeviceCopyValue(device, 0, CFSTR("DeviceName"));
   NSString* udid = (__bridge NSString*) AMDeviceCopyDeviceIdentifier(device);
   NSString* product_type = (__bridge NSString*) AMDeviceCopyValue(device, 0, CFSTR("ProductType"));
@@ -98,6 +111,7 @@ static void describe(struct am_device *device)
 static void install_app(struct am_device *device)
 {
   connect_to_device(device);
+
   NSString* path=[NSString stringWithUTF8String:command.app_path];
   NSURL* local_app_url=[NSURL fileURLWithPath:path isDirectory:TRUE];
   NSDictionary *options = @{ @"PackageType" : @"Developer" };
@@ -148,12 +162,9 @@ static void print_installed_app(const void *key, const void *value, void *contex
 
 static void list_installed_apps(struct am_device *device)
 {
-  if (command.device_udid != NULL) {
-    NSString* udid = (__bridge NSString*) AMDeviceCopyDeviceIdentifier(device);
-    if (strcmp(command.device_udid, udid.UTF8String) != 0) {
-      // Not the device we are looking for, skip it
-      return;
-    }
+  if (!match_device(device))
+  {
+    return;
   }
 
   connect_to_device(device);
