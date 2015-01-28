@@ -8,6 +8,7 @@ extern int install_app(int argc, char *argv[]);
 extern int uninstall_app(int argc, char *argv[]);
 extern int tunnel(int argc, char *argv[]);
 extern int get_bundle_id(int argc, char *argv[]);
+extern int version(int argc, char *argv[]);
 extern int help(int argc, char *argv[]);
 extern int invalid_usage(int argc, char *argv[]);
 

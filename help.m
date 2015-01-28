@@ -6,6 +6,12 @@ int help(int argc, char *argv[])
   printf("  Display this help screen\n");
   printf("\n");
 
+  printf("mobiledevice version [options]\n");
+  printf("  Display program version.\n");
+  printf("  Options:\n");
+  printf("    -r: Include revision identifier\n");
+  printf("\n");
+
   printf("mobiledevice list_devices [options]\n");
   printf("  Display UDID of each connected devices.\n");
   printf("  Options:\n");

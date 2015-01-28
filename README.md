@@ -48,6 +48,11 @@ and the following will be displayed:
 mobiledevice help
   Display this help screen
 
+mobiledevice version [options]
+  Display program version.
+  Options:
+    -r: Include revision identifier
+
 mobiledevice list_devices [options]
   Display UDID of each connected devices.
   Options:

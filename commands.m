@@ -14,6 +14,7 @@ command commands[] =
   {"uninstall_app", uninstall_app},
   {"tunnel", tunnel},
   {"get_bundle_id", get_bundle_id},
+  {"version", version},
   {"help", help},
   {NULL, NULL}
 };
