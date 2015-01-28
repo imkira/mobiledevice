@@ -5,9 +5,11 @@
 command commands[] =
 {
   {"list_devices", list_devices},
-  {"describe_device", describe_device},
+  {"list_device_props", list_device_props},
+  {"get_device_prop", get_device_prop},
   {"list_apps", list_apps},
-  {"describe_app", describe_app},
+  {"list_app_props", list_app_props},
+  {"get_app_prop", get_app_prop},
   {"install_app", install_app},
   {"uninstall_app", uninstall_app},
   {"tunnel", tunnel},

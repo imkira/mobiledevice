@@ -1,7 +1,6 @@
 #include "cli.h"
 
 static char *expected_udid = NULL;
-static char *device_key = NULL;
 
 static const char *keys[] =
 {
@@ -75,22 +74,6 @@ static void on_device_connected(struct am_device *device)
   device_delayed_unregister_aborted = true;
   device_connect(device);
 
-  if (device_key != NULL)
-  {
-    NSString *expected_device_key = [NSString stringWithUTF8String:device_key];
-    CFStringRef key = (__bridge CFStringRef)expected_device_key;
-    id value = AMDeviceCopyValue(device, 0, key);
-
-    if (value != nil)
-    {
-      printfNS(@"%@\n", value);
-      device_unregister(0);
-    }
-
-    device_unregister(1);
-    return;
-  }
-
   for (const char **pkey = keys; *pkey != NULL; ++pkey)
   {
     CFStringRef key = (__bridge CFStringRef)[NSString stringWithUTF8String:*pkey];
@@ -98,20 +81,20 @@ static void on_device_connected(struct am_device *device)
 
     if (value != nil)
     {
-      printfNS(@"%@: %@\n", key, value);
+      printfNS(@"%@\n", key);
     }
   }
 
   device_unregister(0);
 }
 
-int describe_device(int argc, char *argv[])
+int list_device_props(int argc, char *argv[])
 {
   int flag;
   char *endptr;
   int64_t timeout = -1;
 
-  while ((flag = getopt(argc, argv, "u:t:k:")) != -1)
+  while ((flag = getopt(argc, argv, "u:t:")) != -1)
   {
     switch (flag)
     {
@@ -121,10 +104,6 @@ int describe_device(int argc, char *argv[])
 
       case 't':
         timeout = strtoll(optarg, &endptr, 10);
-        break;
-
-      case 'k':
-        device_key = optarg;
         break;
 
       default:

@@ -19,35 +19,20 @@ static void print_app(const void *key, const void *value, void *context)
     return;
   }
 
-  NSString *expected_app_key = nil;
-  if (app_key != NULL)
-  {
-      expected_app_key = [NSString stringWithUTF8String:app_key];
-  }
+  NSString *expected_app_key = [NSString stringWithUTF8String:app_key];
 
   NSDictionary *dict = (__bridge NSDictionary*)value;
   for (NSString *key in dict)
   {
-    if (expected_app_key != nil)
+    if ([key caseInsensitiveCompare:expected_app_key] == NSOrderedSame)
     {
-      if ([key caseInsensitiveCompare:expected_app_key] == NSOrderedSame)
-      {
-        printfNS(@"%@\n", [dict objectForKey:key]);
-        break;
-      }
-    }
-    else
-    {
-      printfNS(@"%@: %@\n", key, [dict objectForKey:key]);
+      printfNS(@"%@\n", [dict objectForKey:key]);
+      device_unregister(0);
+      return;
     }
   }
 
-  if (expected_app_key != nil)
-  {
-    device_unregister(1);
-  }
-
-  device_unregister(0);
+  device_unregister(1);
 }
 
 static void on_device_connected(struct am_device *device)
@@ -69,13 +54,13 @@ static void on_device_connected(struct am_device *device)
   device_unregister(1);
 }
 
-int describe_app(int argc, char *argv[])
+int get_app_prop(int argc, char *argv[])
 {
   int flag;
   char *endptr;
   int64_t timeout = -1;
 
-  while ((flag = getopt(argc, argv, "u:t:k:")) != -1)
+  while ((flag = getopt(argc, argv, "u:t:")) != -1)
   {
     switch (flag)
     {
@@ -87,10 +72,6 @@ int describe_app(int argc, char *argv[])
         timeout = strtoll(optarg, &endptr, 10);
         break;
 
-      case 'k':
-        app_key = optarg;
-        break;
-
       default:
         help(argc, argv);
         return 1;
@@ -100,12 +81,13 @@ int describe_app(int argc, char *argv[])
   argc -= optind;
   argv += optind;
 
-  if (argc != 1)
+  if (argc != 2)
   {
     return invalid_usage(argc, argv);
   }
 
   app_bundle_id = argv[0];
+  app_key = argv[1];
 
   device_delayed_unregister_status = 1;
   device_register(on_device_connected, timeout);

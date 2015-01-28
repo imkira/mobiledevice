@@ -1,7 +1,9 @@
 extern int list_devices(int argc, char *argv[]);
-extern int describe_device(int argc, char *argv[]);
+extern int list_device_props(int argc, char *argv[]);
+extern int get_device_prop(int argc, char *argv[]);
 extern int list_apps(int argc, char *argv[]);
-extern int describe_app(int argc, char *argv[]);
+extern int list_app_props(int argc, char *argv[]);
+extern int get_app_prop(int argc, char *argv[]);
 extern int install_app(int argc, char *argv[]);
 extern int uninstall_app(int argc, char *argv[]);
 extern int tunnel(int argc, char *argv[]);

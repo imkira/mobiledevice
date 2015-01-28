@@ -13,12 +13,18 @@ int help(int argc, char *argv[])
   printf("    -n <count> : Limit the number of devices to be printed\n");
   printf("\n");
 
-  printf("mobiledevice describe_device [options]\n");
-  printf("  Display details of device.\n");
+  printf("mobiledevice list_device_props [options]\n");
+  printf("  List all property names of device.\n");
   printf("  Options:\n");
   printf("    -u <udid> : Filter by device UDID (default: first detected device)\n");
   printf("    -t <timeout>: Timeout (in ms) to wait for devices (default: %lld)\n", DEVICE_DEFAULT_TIMEOUT);
-  printf("    -k <key> : Filter by key\n");
+  printf("\n");
+
+  printf("mobiledevice get_device_prop [options] <prop_name>\n");
+  printf("  Display value of device property with given name.\n");
+  printf("  Options:\n");
+  printf("    -u <udid> : Filter by device UDID (default: first detected device)\n");
+  printf("    -t <timeout>: Timeout (in ms) to wait for devices (default: %lld)\n", DEVICE_DEFAULT_TIMEOUT);
   printf("\n");
 
   printf("mobiledevice list_apps [options]\n");
@@ -28,12 +34,18 @@ int help(int argc, char *argv[])
   printf("    -t <timeout>: Timeout (in ms) to wait for devices (default: %lld)\n", DEVICE_DEFAULT_TIMEOUT);
   printf("\n");
 
-  printf("mobiledevice describe_app [options] <bundle_id>\n");
-  printf("  Display details of app installed on device\n");
+  printf("mobiledevice list_app_props [options] <bundle_id>\n");
+  printf("  List all property names of app with given bundle id.\n");
   printf("  Options:\n");
   printf("    -u <udid> : Filter by device UDID (default: first detected device)\n");
   printf("    -t <timeout>: Timeout (in ms) to wait for devices (default: %lld)\n", DEVICE_DEFAULT_TIMEOUT);
-  printf("    -k <key> : Filter by key\n");
+  printf("\n");
+
+  printf("mobiledevice get_app_prop [options] <bundle_id> <prop_name>\n");
+  printf("  Display value of app property with given name.\n");
+  printf("  Options:\n");
+  printf("    -u <udid> : Filter by device UDID (default: first detected device)\n");
+  printf("    -t <timeout>: Timeout (in ms) to wait for devices (default: %lld)\n", DEVICE_DEFAULT_TIMEOUT);
   printf("\n");
 
   printf("mobiledevice install_app [options] <path_to_app>\n");
