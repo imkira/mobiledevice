@@ -3,6 +3,8 @@
 mobiledevice
 ============
 
+[![Build Status](https://travis-ci.org/imkira/mobiledevice.png)](https://travis-ci.org/imkira/mobiledevice)
+
 mobiledevice is a command line utility for interacting with Apple's Private
 Mobile Device Framework.  It can be used for automating some tasks like
 installing and uninstalling apps on your iPhone/iPad without having to manually

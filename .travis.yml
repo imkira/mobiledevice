@@ -1,0 +1,5 @@
+os:
+  - osx
+
+compiler:
+  - clang

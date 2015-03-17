@@ -3,6 +3,8 @@
 mobiledevice
 ============
 
+[![Build Status](https://travis-ci.org/imkira/mobiledevice.png)](https://travis-ci.org/imkira/mobiledevice)
+
 mobiledeviceはAppleのMobile Deviceフレームワークと相互に使用するコマンドラインツールである。
 XcodeやiTunesに頼らず、コマンドラインからアプリをインストールしたりアンインストールしたりするのが出来るのでそのような作業は自動化可能となる。
 普通のjailbroken端末ではなくても大丈夫！
