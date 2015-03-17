@@ -7,7 +7,7 @@ mobiledeviceはAppleのMobile Deviceフレームワークと相互に使用す�
 XcodeやiTunesに頼らず、コマンドラインからアプリをインストールしたりアンインストールしたりするのが出来るのでそのような作業は自動化可能となる。
 普通のjailbroken端末ではなくても大丈夫！
 
-## 本ツールを使うための必要な環境など
+## 必要なもの
 
 * iPhone 3G以降の端末 or iPad（iPhone 4, 5, 6で確認した）。
 * iPhone or iPadをUSBでMacに接続する。
@@ -16,15 +16,31 @@ XcodeやiTunesに頼らず、コマンドラインからアプリをインスト
 * XCode 3以降 と iOS SDKをインストールする。
 * 本ツールをコインパイルする（任意だがインストールも可能）。
 
-## コンパイルとインストールについて
+### インストール
 
-mobiledeviceをコンパイルするには、ターミナルを開いて下記コマンドを記入する：
+### Homebrew
 
+[homebrew](http://brew.sh)
+を使用する場合、ターミナルを開いて下記コマンドを実行する：
+
+```shell
+brew update
+brew install mobiledevice
 ```
+
+### 手動
+
+mobiledeviceをコンパイルするには、ターミナルを開いて下記コマンドを実行する：
+
+```shell
 git clone git://github.com/imkira/mobiledevice.git
 cd mobiledevice
 make
-#  /usr/local/binの下にインストールするには下記コマンドも入力する：
+```
+
+インストールするには下記コマンドも入力する：
+
+```shell
 make install
 ```
 
@@ -36,7 +52,7 @@ make install
 
 下記のようにmobiledeviceを実行すると、
 
-```
+```shell
 mobiledevice help
 ```
 

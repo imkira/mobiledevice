@@ -18,15 +18,31 @@ do it via Xcode or iTunes.  You don't need a jailbroken device!
 * XCode 3 or above with iOS SDK installed.
 * You need to compile the tool and optionally install it.
 
-## Compilation & Installation
+## Installation
 
-To compile (and optionally install) mobiledevice, open a terminal console and type:
+### Homebrew
 
+If you use [homebrew](http://brew.sh), you can install mobiledevice by
+executing:
+
+```shell
+brew update
+brew install mobiledevice
 ```
+
+### Manual
+
+To compile mobiledevice, open a terminal console and type:
+
+```shell
 git clone git://github.com/imkira/mobiledevice.git
 cd mobiledevice
 make
-# to install system-wide (under /usr/local/bin) type the command below too:
+```
+
+To install mobiledevice in your system, proceed with:
+
+```shell
 make install
 ```
 
@@ -38,7 +54,7 @@ After compiling/installing mobiledevice, open a terminal console.
 
 For the usage screen, you can type
 
-```
+```shell
 mobiledevice help
 ```
 
