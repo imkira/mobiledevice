@@ -12,11 +12,13 @@ headers := $(wildcard *.h)
 all: mobiledevice
 
 mobiledevice: $(sources) $(headers)
-	$(CC) -Wall -fobjc-arc -o mobiledevice -framework CoreFoundation -framework Cocoa -framework MobileDevice -F/System/Library/PrivateFrameworks $(DEFINES) $(sources)
+	./symlink_framework.sh
+	$(CC) -Wall -fobjc-arc -o mobiledevice -framework CoreFoundation -framework Cocoa -framework MobileDevice -FFrameworks $(DEFINES) $(sources)
 
 install: mobiledevice
 	install -d ${PREFIX}/bin
 	install mobiledevice ${PREFIX}/bin
 
 clean:
+	rm -rf Frameworks
 	rm -rf mobiledevice
